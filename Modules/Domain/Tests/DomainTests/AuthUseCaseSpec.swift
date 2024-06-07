@@ -8,7 +8,7 @@ final class AuthUseCaseSpec: XCTestCase {
     let user: User = .init(cpf: "01464255105", password: "12345678")
 
     func test_WhenSuccess_ShouldReceiveValidToken() throws {
-        let (sut, spy) = try XCTUnwrap(makeTestObjects(isSuccess: true))
+        let sut = try XCTUnwrap(makeTestObjects(isSuccess: true))
         var isSuccess: Bool = false
         var receivedToken: Token?
 
@@ -27,7 +27,7 @@ final class AuthUseCaseSpec: XCTestCase {
     }
 
     func test_WhenFailure_ShouldReceiveAnHttpError() throws {
-        let (sut, spy) = try XCTUnwrap(makeTestObjects(isSuccess: false))
+        let sut = try XCTUnwrap(makeTestObjects(isSuccess: false))
         var isFailure: Bool = false
         var receivedToken: Token?
 
@@ -44,24 +44,16 @@ final class AuthUseCaseSpec: XCTestCase {
         XCTAssertNil(receivedToken)
     }
 
-    func makeValidURL() -> URL? {
-        URL(string: "https://www.validurl.com")
-    }
+    func makeTestObjects(isSuccess: Bool) throws -> AuthUseCase {
+        let url = try XCTUnwrap(URL(string: "https://www.validurl.com"))
+        let stub = HttpPostClientStub(isSuccess: isSuccess)
+        let sut = AuthUseCase(url: url, httpClient: stub)
 
-    func makeTokenData() -> Data? {
-        Token(token: "ValidToken").toData()
-    }
-
-    func makeTestObjects(isSuccess: Bool) throws -> (sut: AuthUseCase, spy: HttpPostClientSpy) {
-        let url = try XCTUnwrap(makeValidURL())
-        let spy = HttpPostClientSpy(isSuccess: isSuccess)
-        let sut = AuthUseCase(url: url, httpClient: spy)
-
-        return (sut, spy)
+        return sut
     }
 }
 
-final class HttpPostClientSpy: HttpPostClient {
+final class HttpPostClientStub: HttpPostClient {
 
     private let isSuccess: Bool
 
