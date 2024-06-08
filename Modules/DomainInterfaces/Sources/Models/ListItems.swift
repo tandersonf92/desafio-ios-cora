@@ -1,5 +1,5 @@
-public struct ListItems {
-    public struct Items {
+public struct ListItems: Decodable, Equatable {
+    public struct Items: Decodable, Equatable {
         public let items: [Item]
         public let date: String
 
@@ -9,7 +9,7 @@ public struct ListItems {
         }
     }
 
-    public struct Item {
+    public struct Item: Decodable, Equatable {
         public let id: String
         public let description: String
         public let label: String
@@ -31,11 +31,11 @@ public struct ListItems {
         }
     }
 
-    public let results: Items
     public let itemsTotal: Int
+    public let results: [Items]
 
-    init(results: Items, itemsTotal: Int) {
-        self.results = results
+    public init(itemsTotal: Int, results: [Items]) {
         self.itemsTotal = itemsTotal
+        self.results = results
     }
 }
