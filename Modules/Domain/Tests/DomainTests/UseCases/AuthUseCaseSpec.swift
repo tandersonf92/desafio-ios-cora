@@ -8,7 +8,7 @@ final class AuthUseCaseSpec: XCTestCase {
     let user: User = .init(cpf: "01464255105", password: "12345678")
 
     func test_WhenSuccess_ShouldReceiveValidToken() throws {
-        let sut = try XCTUnwrap(makeTestObjects(isSuccess: true))
+        let (sut, spy) = try XCTUnwrap(makeTestObjects(isSuccess: true))
         var isSuccess: Bool = false
         var receivedToken: Token?
 
@@ -24,10 +24,11 @@ final class AuthUseCaseSpec: XCTestCase {
 
         XCTAssertTrue(isSuccess)
         XCTAssertEqual(receivedToken, .init(token: "ValidToken"))
+        XCTAssertEqual(spy.receivedURL, URL(string: "https://www.validurl.com"))
     }
 
     func test_WhenFailure_ShouldReceiveAnHttpError() throws {
-        let sut = try XCTUnwrap(makeTestObjects(isSuccess: false))
+        let (sut, spy) = try XCTUnwrap(makeTestObjects(isSuccess: false))
         var isFailure: Bool = false
         var receivedToken: Token?
 
@@ -42,19 +43,21 @@ final class AuthUseCaseSpec: XCTestCase {
 
         XCTAssertTrue(isFailure)
         XCTAssertNil(receivedToken)
+        XCTAssertEqual(spy.receivedURL, URL(string: "https://www.validurl.com"))
     }
 
-    func makeTestObjects(isSuccess: Bool) throws -> AuthUseCase {
+    func makeTestObjects(isSuccess: Bool) throws -> (sut: AuthUseCase, spy: HttpPostClientSpy) {
         let url = try XCTUnwrap(URL(string: "https://www.validurl.com"))
-        let stub = HttpPostClientStub(isSuccess: isSuccess)
-        let sut = AuthUseCase(url: url, httpClient: stub)
+        let spy = HttpPostClientSpy(isSuccess: isSuccess)
+        let sut = AuthUseCase(url: url, httpClient: spy)
 
-        return sut
+        return (sut, spy)
     }
 }
 
-final class HttpPostClientStub: HttpPostClient {
+final class HttpPostClientSpy: HttpPostClient {
 
+    var receivedURL: URL?
     private let isSuccess: Bool
 
     init(isSuccess: Bool = true) {
@@ -62,6 +65,7 @@ final class HttpPostClientStub: HttpPostClient {
     }
 
     func post(to url: URL, with data: Data?, completion: @escaping (Result<Data?, HttpError>) -> Void) {
+        receivedURL = url
         if isSuccess {
             let tokenData = Token(token: "ValidToken").toData()
             completion(.success(tokenData))
