@@ -11,7 +11,7 @@ final class BankStatementListItemsUseCaseSpec: XCTestCase {
             switch result {
             case .success(let listItems):
                 receivedListItems = listItems
-            case .failure(let failure):
+            case .failure(_):
                 XCTFail("Unexpected result")
             }
         }
@@ -26,7 +26,7 @@ final class BankStatementListItemsUseCaseSpec: XCTestCase {
 
         sut.getListItems { result in
             switch result {
-            case .success(let listItems):
+            case .success(_):
                 XCTFail("Unexpected result")
             case .failure(let error):
                 receivedError = error
@@ -96,26 +96,4 @@ final class HttpGetClientSpy: HttpGetClient {
       "itemsTotal": 1
     }
     """
-}
-
-final class BankStatementListItemsUseCase: BankStatementListItemsUseCaseProtocol {
-    private let url: URL
-    private let httpClient: HttpGetClient
-
-    init(url: URL, httpClient: HttpGetClient) {
-        self.url = url
-        self.httpClient = httpClient
-    }
-
-    func getListItems(completion: @escaping (Result<ListItems, DomainError>) -> Void) {
-        httpClient.get(to: url) { result in
-            switch result {
-            case .success(let data):
-                guard let listItems: ListItems = data?.toModel() else { return completion(.failure(.genericError)) }
-                completion(.success(listItems))
-            case .failure:
-                completion(.failure(.genericError))
-            }
-        }
-    }
 }
