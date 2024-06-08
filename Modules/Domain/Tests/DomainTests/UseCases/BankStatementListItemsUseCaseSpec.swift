@@ -23,6 +23,7 @@ final class BankStatementListItemsUseCaseSpec: XCTestCase {
     func test_WhenFailure_ShouldReceiveGenericError() throws {
         let (sut, spy) = try XCTUnwrap(makeTestObjects(isSuccess: false))
         var receivedError: DomainError?
+        var isFailure: Bool = false
 
         sut.getListItems { result in
             switch result {
@@ -30,11 +31,13 @@ final class BankStatementListItemsUseCaseSpec: XCTestCase {
                 XCTFail("Unexpected result")
             case .failure(let error):
                 receivedError = error
+                isFailure = true
             }
         }
 
         XCTAssertEqual(spy.receivedURL, URL(string: "https://www.validurl.com"))
         XCTAssertEqual(receivedError, .genericError)
+        XCTAssertTrue(isFailure)
     }
 
     func makeTestObjects(isSuccess: Bool) throws -> (sut: BankStatementListItemsUseCase, spy: HttpGetClientSpy) {
