@@ -28,6 +28,7 @@
 		87AA035D2C139982000F34A5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		87AA03652C13B5BA000F34A5 /* Domain */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Domain; sourceTree = "<group>"; };
 		87AA03662C13B5BA000F34A5 /* DomainInterfaces */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = DomainInterfaces; sourceTree = "<group>"; };
+		87D1DCFB2C14A8BC00C10739 /* Infra */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Infra; path = ../../Infra/Infra; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +76,7 @@
 		87AA03672C13B5BA000F34A5 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				87D1DCFB2C14A8BC00C10739 /* Infra */,
 				87AA03652C13B5BA000F34A5 /* Domain */,
 				87AA03662C13B5BA000F34A5 /* DomainInterfaces */,
 			);
